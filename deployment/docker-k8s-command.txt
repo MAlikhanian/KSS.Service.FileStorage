@@ -1,0 +1,69 @@
+# Local dev
+dotnet build
+dotnet run
+
+# ============================================================================
+# ONE shared image for ALL FileStorage instances.
+# Each instance is the SAME image; it differs only by its DB connection string
+# (injected per-namespace via a Secret -> the Deployment's secretKeyRef).
+# ============================================================================
+
+# Login + build & push the shared image (run once; redeploy each instance after)
+docker login docker-hosted.sebaoffice.ir
+docker buildx build --push -t docker-hosted.sebaoffice.ir/kss-file-storage-service:latest .
+# Alternative: docker build -t docker-hosted.sebaoffice.ir/kss-file-storage-service:latest . && docker push docker-hosted.sebaoffice.ir/kss-file-storage-service:latest
+
+
+# ============================================================================
+# person-document   (DB: KSS_FileStorage_PersonDocument_00001_Prod)
+# ============================================================================
+kubectl apply -f deployment.person-document.yaml
+kubectl create secret docker-registry docker-secret --docker-server=docker-hosted.sebaoffice.ir --docker-username=YOUR_USERNAME --docker-password=YOUR_PASSWORD --namespace kss-file-storage-person-document-00001-service
+kubectl create secret generic kss-file-storage-person-document-00001-db -n kss-file-storage-person-document-00001-service --from-literal=connection-string="Data Source=database91.sebaoffice.ir;Initial Catalog=KSS_FileStorage_PersonDocument_00001_Prod;User ID=kss;Password=<DB_PASSWORD>;TrustServerCertificate=True;"
+kubectl rollout restart deployment/kss-file-storage-person-document-00001-service -n kss-file-storage-person-document-00001-service
+kubectl get pods,svc,ingress,secret,certificate -n kss-file-storage-person-document-00001-service
+# Cleanup: kubectl delete namespace kss-file-storage-person-document-00001-service --ignore-not-found
+
+
+# ============================================================================
+# person-education-document   (DB: KSS_FileStorage_PersonEducationDocument_00001_Prod)
+# ============================================================================
+kubectl apply -f deployment.person-education-document.yaml
+kubectl create secret docker-registry docker-secret --docker-server=docker-hosted.sebaoffice.ir --docker-username=YOUR_USERNAME --docker-password=YOUR_PASSWORD --namespace kss-file-storage-person-education-document-00001-service
+kubectl create secret generic kss-file-storage-person-education-document-00001-db -n kss-file-storage-person-education-document-00001-service --from-literal=connection-string="Data Source=database91.sebaoffice.ir;Initial Catalog=KSS_FileStorage_PersonEducationDocument_00001_Prod;User ID=kss;Password=<DB_PASSWORD>;TrustServerCertificate=True;"
+kubectl rollout restart deployment/kss-file-storage-person-education-document-00001-service -n kss-file-storage-person-education-document-00001-service
+kubectl get pods,svc,ingress,secret,certificate -n kss-file-storage-person-education-document-00001-service
+# Cleanup: kubectl delete namespace kss-file-storage-person-education-document-00001-service --ignore-not-found
+
+
+# ============================================================================
+# person-employment-document   (DB: KSS_FileStorage_PersonEmploymentDocument_00001_Prod)
+# ============================================================================
+kubectl apply -f deployment.person-employment-document.yaml
+kubectl create secret docker-registry docker-secret --docker-server=docker-hosted.sebaoffice.ir --docker-username=YOUR_USERNAME --docker-password=YOUR_PASSWORD --namespace kss-file-storage-person-employment-document-00001-service
+kubectl create secret generic kss-file-storage-person-employment-document-00001-db -n kss-file-storage-person-employment-document-00001-service --from-literal=connection-string="Data Source=database91.sebaoffice.ir;Initial Catalog=KSS_FileStorage_PersonEmploymentDocument_00001_Prod;User ID=kss;Password=<DB_PASSWORD>;TrustServerCertificate=True;"
+kubectl rollout restart deployment/kss-file-storage-person-employment-document-00001-service -n kss-file-storage-person-employment-document-00001-service
+kubectl get pods,svc,ingress,secret,certificate -n kss-file-storage-person-employment-document-00001-service
+# Cleanup: kubectl delete namespace kss-file-storage-person-employment-document-00001-service --ignore-not-found
+
+
+# ============================================================================
+# person-p-t-document   (DB: KSS_FileStorage_PersonPTDocument_00001_Prod)
+# ============================================================================
+kubectl apply -f deployment.person-p-t-document.yaml
+kubectl create secret docker-registry docker-secret --docker-server=docker-hosted.sebaoffice.ir --docker-username=YOUR_USERNAME --docker-password=YOUR_PASSWORD --namespace kss-file-storage-person-p-t-document-00001-service
+kubectl create secret generic kss-file-storage-person-p-t-document-00001-db -n kss-file-storage-person-p-t-document-00001-service --from-literal=connection-string="Data Source=database91.sebaoffice.ir;Initial Catalog=KSS_FileStorage_PersonPTDocument_00001_Prod;User ID=kss;Password=<DB_PASSWORD>;TrustServerCertificate=True;"
+kubectl rollout restart deployment/kss-file-storage-person-p-t-document-00001-service -n kss-file-storage-person-p-t-document-00001-service
+kubectl get pods,svc,ingress,secret,certificate -n kss-file-storage-person-p-t-document-00001-service
+# Cleanup: kubectl delete namespace kss-file-storage-person-p-t-document-00001-service --ignore-not-found
+
+
+# ============================================================================
+# import   (DB: KSS_FileStorage_Import_00001_Prod)
+# ============================================================================
+kubectl apply -f deployment.import.yaml
+kubectl create secret docker-registry docker-secret --docker-server=docker-hosted.sebaoffice.ir --docker-username=YOUR_USERNAME --docker-password=YOUR_PASSWORD --namespace kss-file-storage-import-00001-service
+kubectl create secret generic kss-file-storage-import-00001-db -n kss-file-storage-import-00001-service --from-literal=connection-string="Data Source=database91.sebaoffice.ir;Initial Catalog=KSS_FileStorage_Import_00001_Prod;User ID=kss;Password=<DB_PASSWORD>;TrustServerCertificate=True;"
+kubectl rollout restart deployment/kss-file-storage-import-00001-service -n kss-file-storage-import-00001-service
+kubectl get pods,svc,ingress,secret,certificate -n kss-file-storage-import-00001-service
+# Cleanup: kubectl delete namespace kss-file-storage-import-00001-service --ignore-not-found
